@@ -1,0 +1,14 @@
+So ideally the application flow would be that we have
+the ApplicationRunner which instantiates objects for
+wrapper and the logical handler.  We will then wait
+for relevant signals from the Input hardware wrappers
+and if signals are received or some internal stimuli
+is achieved, we process those signals.  If warranted
+we then pass on the correct instructions to the 
+outputter.
+
+Ideally we want to make the classes we write as generic
+as possible, with almost no hardcoding.  We will have
+some sort of configuration file that would hold all of
+config/settings that would need changing.  This would
+make the project easier to maintain.
