@@ -9,8 +9,46 @@ import java.util.*;
 
 public class InputWrapper extends Service {
     private String[] config;
+    private Timer timer = new Timer();
     public IBinder onBind(Intent i){
     	return null;
+    }
+    public void onCreate(){
+    	super.onCreate();
+    	_startService();
+    	
+    }
+    public void onDestroy(){
+    	super.onDestroy();
+
+    	  _shutdownService();
+
+    }
+    private void _startService(){
+    	timer.scheduleAtFixedRate(
+    		      new TimerTask() {
+    		        public void run() {
+    		          mainRunner();
+    		        }
+    		      },
+    		      0,
+    		      1);
+
+    }
+    private void mainRunner(){
+    	float xcel;
+    	boolean tac;
+    	tac = tacRetrieve();
+    	xcel = XmHandler();
+    	if (xcel > 9.8){
+    		
+    	}
+    	if (tac){
+    		
+    	}
+    }
+    private void _shutdownService(){
+    	
     }
 	public InputWrapper() {
 	   retrieveConfig();// TODO Auto-generated constructor stub
@@ -22,7 +60,7 @@ public class InputWrapper extends Service {
 	//GPS Handler Stub
 	public float[] GPSHandler(){
 		float[] s;
-		s = new int[2];
+		s = new float[2];
 		Location loc;
 		LocationManager locMan;
 		String locPro;
