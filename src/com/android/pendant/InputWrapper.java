@@ -1,18 +1,46 @@
 package com.android.pendant;
+import android.app.Service;
+import android.content.Intent;
+import android.os.Binder;
+import android.os.IBinder;
+import android.os.IInterface;
+import android.location.*;
+import java.util.*;
 
-public class InputWrapper {
+public class InputWrapper extends Service {
     private String[] config;
+    public IBinder onBind(Intent i){
+    	return null;
+    }
 	public InputWrapper() {
 	   retrieveConfig();// TODO Auto-generated constructor stub
 	}
 	//Accelerometer wrapper stub
 	public float XmHandler(){
-		return 0.0;
+		return 0;
 	}
 	//GPS Handler Stub
-	public int[] GPSHandler(){
-		int[] s;
-		s = new int[0];
+	public float[] GPSHandler(){
+		float[] s;
+		s = new int[2];
+		Location loc;
+		LocationManager locMan;
+		String locPro;
+		List<String> proList;
+
+		//Get the location manager from the server
+		locMan = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+	 	proList = locMan.getProviders(true);
+		
+		//Just grab the first member of the list. It's name will be "gps"
+		locPro = proList.get(0);
+		loc = locMan.getLastKnownLocation(locPro);
+
+		float Lat =  (float)loc.getLatitude();
+		float Lon =  (float)loc.getLongitude();
+        s[0] = Lat;
+        s[1] = Lon;
 		return s;
 	}
 	//Config retrieval
