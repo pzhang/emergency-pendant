@@ -9,10 +9,20 @@ import java.util.*;
 
 public class InputWrapper extends Service {
     private String[] config;
-    private Timer timer = new Timer();
     public IBinder onBind(Intent i){
-    	return null;
+    	return mBinder;
     }
+    private final InputWrapperInterface.Stub mBinder = new InputWrapperInterface.Stub(){
+    	public float[] location(){
+    		return GPSHandler();
+    	}
+    	public boolean tacResponse(){
+    		return tacRetrieve();
+    	}
+    	public float xcel(){
+    	    return XmHandler();	
+    	}
+    };
     public void onCreate(){
     	super.onCreate();
     	_startService();
@@ -25,27 +35,10 @@ public class InputWrapper extends Service {
 
     }
     private void _startService(){
-    	timer.scheduleAtFixedRate(
-    		      new TimerTask() {
-    		        public void run() {
-    		          mainRunner();
-    		        }
-    		      },
-    		      0,
-    		      1);
 
     }
     private void mainRunner(){
-    	float xcel;
-    	boolean tac;
-    	tac = tacRetrieve();
-    	xcel = XmHandler();
-    	if (xcel > 9.8){
-    		
-    	}
-    	if (tac){
-    		
-    	}
+    
     }
     private void _shutdownService(){
     	
