@@ -37,9 +37,7 @@ public class InputWrapper extends Service {
     private void _startService(){
 
     }
-    private void mainRunner(){
-    
-    }
+
     private void _shutdownService(){
     	
     }
