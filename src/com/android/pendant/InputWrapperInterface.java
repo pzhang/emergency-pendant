@@ -67,9 +67,9 @@ return true;
 case TRANSACTION_xcel:
 {
 data.enforceInterface(DESCRIPTOR);
-float _result = this.xcel();
+float[] _result = this.xcel();
 reply.writeNoException();
-reply.writeFloat(_result);
+reply.writeFloatArray(_result);
 return true;
 }
 }
@@ -124,16 +124,16 @@ _data.recycle();
 }
 return _result;
 }
-public float xcel() throws android.os.RemoteException
+public float[] xcel() throws android.os.RemoteException
 {
 android.os.Parcel _data = android.os.Parcel.obtain();
 android.os.Parcel _reply = android.os.Parcel.obtain();
-float _result;
+float[] _result;
 try {
 _data.writeInterfaceToken(DESCRIPTOR);
 mRemote.transact(Stub.TRANSACTION_xcel, _data, _reply, 0);
 _reply.readException();
-_result = _reply.readFloat();
+_result = _reply.createFloatArray();
 }
 finally {
 _reply.recycle();
@@ -148,5 +148,5 @@ static final int TRANSACTION_xcel = (IBinder.FIRST_CALL_TRANSACTION + 2);
 }
 public float[] location() throws android.os.RemoteException;
 public boolean tacResponse() throws android.os.RemoteException;
-public float xcel() throws android.os.RemoteException;
+public float[] xcel() throws android.os.RemoteException;
 }
