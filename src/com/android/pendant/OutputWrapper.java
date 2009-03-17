@@ -41,12 +41,11 @@ public class OutputWrapper extends Service {
 	private String[] config;
 	private void sendMsg(String msg){
 		Log.i("OutputWrapper", "Sending Msg : " + msg);
-		LocationManager lm =
-			(LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		SmsManager sm = SmsManager.getDefault();
-		//notifyUser();
+	    notifyUser();
 		sm.sendTextMessage("5556", null, msg,
 		                   null, null);
+
 	}
 	public OutputWrapper(){
 		retrieveConfig();
@@ -68,7 +67,7 @@ getSystemService(Context.NOTIFICATION_SERVICE);
             notification.ledOffMS = 500;
             notification.defaults = Notification.DEFAULT_SOUND;
             notification.vibrate = new long[] {200, 300};
-            Log.i("OutputWrapper", "Notification" + 
+            Log.i("OutputWrapper", "Notification: " + 
             	   notification.toString());
             manager.notify(1, notification);
 	}

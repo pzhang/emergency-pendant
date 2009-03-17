@@ -34,27 +34,24 @@ public class EmergencyPendant extends Activity {
         Intent osvc = new Intent(this, OutputWrapper.class);
         bindService(svc, mConnection, Context.BIND_AUTO_CREATE);
         bindService(osvc, oConnection, Context.BIND_AUTO_CREATE);
-        LocationManager locMan;
-        locMan = (LocationManager) getSystemService(LOCATION_SERVICE);
-        iwrapper = new InputWrapperDumb(locMan);
         runMain();    
     }
     private void runMain(){
+
+        time.schedule(new TimerTask() {
+            public void run() {
+                mainRunner();
+              }
+            }, 0, 1000);
+    }
+    private void mainRunner(){
+    	Log.i("MainRunner", "Running");
         if (iService == null) {
         	Log.i("iService", "NULL");
         }
         if (oService == null) {
         	Log.i("oService", "NULL");
         }
-        Log.i("runMain", "Running");
-        time.schedule(new TimerTask() {
-            public void run() {
-                mainRunner();
-              }
-            }, 0, 100);
-    }
-    private void mainRunner(){
-    	Log.i("MainRunner", "Running");
     	try {
     	xy = iService.location();
     	xcel = iService.xcel();

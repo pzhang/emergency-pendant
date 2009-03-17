@@ -44,15 +44,16 @@ public class InputWrapper extends Service {
     private void _startService(){
 		//Get the location manager from the server
 		locMan = (LocationManager) getSystemService(LOCATION_SERVICE);
-		time.schedule(new TimerTask() {
-            public void run() {
-                setGPS();
-              }
-            }, 0, 100);
 	 	//proList = locMan.getProviders(true);
 		
 		//Just grab the first member of the list. It's name will be "gps"
 		//locPro = proList.get(0);
+		time.schedule(new TimerTask() {
+            public void run() {
+                setGPS();
+              }
+            }, 0, 1000);
+
     }
 
     private void _shutdownService(){
@@ -73,10 +74,11 @@ public class InputWrapper extends Service {
 	//GPS Handler Stub
 	private void setGPS(){
 		Location loc;
+		Log.i("InputWrapper", "in setGPS");
+		Log.i("InputWrapper", Float.toString(s[0]) + " " + Float.toString(s[1]));
 		loc = locMan.getLastKnownLocation("gps");
 		float Lat =  (float)loc.getLatitude();
 		float Lon =  (float)loc.getLongitude();
-		Log.i("InputWrapper", Float.toString(Lat) + " " + Float.toString(Lon));
         s[0] = Lat;
         s[1] = Lon;
 	}

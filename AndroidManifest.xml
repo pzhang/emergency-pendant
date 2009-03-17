@@ -12,5 +12,8 @@
             </intent-filter>
         </activity>
     <service android:enabled="true" android:name="InputWrapper"></service>
+<service android:name="OutputWrapper" android:enabled="true"></service>
 </application>
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
+<uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION"></uses-permission>
 </manifest> 
