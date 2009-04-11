@@ -1,5 +1,6 @@
 package com.android.pendant;
 import android.app.Service;
+import android.hardware.SensorManager;
 import android.content.Intent;
 import android.os.Binder;
 import android.util.Log;
@@ -7,15 +8,19 @@ import android.os.IBinder;
 import android.os.IInterface;
 import android.location.*;
 import java.util.*;
+import android.hardware.SensorListener;
 
-public class InputWrapper extends Service {
+public class InputWrapper extends Service implements SensorListener{
     private String[] config;
     LocationManager locMan;
     String locPro;
+    SensorManager sensors;
     List<String> proList;
+    private long lastUpdate = -1;
     Timer time = new Timer();
     float[] s = new float[2];
     float[] location;
+    float[] accel = new float[3];
     public IBinder onBind(Intent i){
     	return mBinder;
     }
@@ -44,6 +49,10 @@ public class InputWrapper extends Service {
     private void _startService(){
 		//Get the location manager from the server
 		locMan = (LocationManager) getSystemService(LOCATION_SERVICE);
+		sensors = (SensorManager) getSystemService(SENSOR_SERVICE);
+		sensors.registerListener(this,
+		        SensorManager.SENSOR_ACCELEROMETER,
+		        SensorManager.SENSOR_DELAY_UI);
 	 	//proList = locMan.getProviders(true);
 		
 		//Just grab the first member of the list. It's name will be "gps"
@@ -69,8 +78,32 @@ public class InputWrapper extends Service {
 		foo[0] = rand.nextFloat() * 12;
 		foo[1] = rand.nextFloat() * 12;
 		foo[2] = rand.nextFloat() * 12;
+		//return accel;
 		return foo;
 	}
+	public void onAccuracyChanged(int sensor, int accuracy) {
+	    // this method is called very rarely, so we don't have to
+	    // limit our updates as we do in onSensorChanged(...)
+	   
+	  }
+	 
+	  // from the android.hardware.SensorListener interface
+	  public void onSensorChanged(int sensor, float[] values) {
+	    if (sensor == SensorManager.SENSOR_ACCELEROMETER) {
+	      long curTime = System.currentTimeMillis();
+	      // only allow one update every 100ms, otherwise updates
+	      // come way too fast and the phone gets bogged down
+	      // with garbage collection
+	      if (lastUpdate == -1 || (curTime - lastUpdate) > 100) {
+	        lastUpdate = curTime;
+	        
+	        accel[0] = values[SensorManager.DATA_X];
+	        accel[1] = values[SensorManager.DATA_Y];
+	        accel[2] = values[SensorManager.DATA_Z];
+	        
+	      }
+	    }
+	  }
 	//GPS Handler Stub
 	private void setGPS(){
 		Location loc;

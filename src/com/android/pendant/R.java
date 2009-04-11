@@ -14,6 +14,8 @@ public final class R {
         public static final int icon=0x7f020000;
     }
     public static final class id {
+        public static final int cancel=0x7f050002;
+        public static final int send=0x7f050001;
         public static final int text=0x7f050000;
     }
     public static final class layout {

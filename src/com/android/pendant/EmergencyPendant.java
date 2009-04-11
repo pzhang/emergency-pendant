@@ -1,4 +1,6 @@
 package com.android.pendant;
+import android.widget.Button;
+import android.view.View.*;
 import android.content.ServiceConnection;
 import android.util.Log;
 import android.app.Activity;
@@ -9,7 +11,7 @@ import android.content.Context;
 import android.content.ComponentName;
 import android.os.*;
 import android.widget.TextView;
-
+import android.view.View;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -17,27 +19,54 @@ public class EmergencyPendant extends Activity {
     /** Called when the activity is first created. */
 	InputWrapperInterface iService = null;
 	OutputWrapperInterface oService = null;
-	InputWrapperDumb iwrapper;
-	Timer time = new Timer();
+	Timer time;
 	float[] xcel;
 	boolean tac;
 	float[] xy;
 	TextView myView = null;
 	Context local = this;
+	Button send;
+	Button cancel;
+	String message;
     @Override
     
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pendant);
         myView = (TextView) findViewById(R.id.text);
+        send = (Button) findViewById(R.id.send);
+        cancel = (Button) findViewById(R.id.cancel);
+       /* send.setVisibility(TextView.INVISIBLE);
+        send.setEnabled(false);
+        cancel.setVisibility(TextView.INVISIBLE);
+        cancel.setEnabled(false);*/
         Intent svc = new Intent(this, InputWrapper.class);
         Intent osvc = new Intent(this, OutputWrapper.class);
         bindService(svc, mConnection, Context.BIND_AUTO_CREATE);
         bindService(osvc, oConnection, Context.BIND_AUTO_CREATE);
+        send.setOnClickListener(new OnClickListener() {
+      	  @Override
+      	  public void onClick(View v) {
+      		  try{
+      			Log.i("MainRunner", "Sending msg");
+      		    oService.transmit(message);
+      		  }
+      	      catch (RemoteException ex){
+    		      }
+      	  }
+      	});
+        cancel.setOnClickListener(new OnClickListener() {
+    	  @Override
+    	  public void onClick(View v) {
+    		  runMain();
+    	  }
+    	});
         runMain();    
+    
     }
-    private void runMain(){
 
+    private void runMain(){
+    	time = new Timer();
         time.schedule(new TimerTask() {
             public void run() {
                 mainRunner();
@@ -80,16 +109,16 @@ public class EmergencyPendant extends Activity {
     	if (tac || (xcel[0] >= 9.8 || 
     			    xcel[1] >= 9.8 ||
     			    xcel[2] >= 9.8)){
-    		try{
-    		String message;
+    		time.cancel();
+    		myView.setText("Event has happened, decide operation: ");
     		message = "Lat: " + Float.toString(xy[0]) +
-    		          "Long: " + Float.toString(xy[1]);
-    		Log.i("MainRunner", "Sending msg");
-    		oService.transmit(message);
-    		}
-    		catch (RemoteException ex){
-    			
-    		}
+	          "Long: " + Float.toString(xy[1]);
+            send.setVisibility(TextView.VISIBLE);
+            send.setEnabled(true);
+            cancel.setVisibility(TextView.VISIBLE);
+            cancel.setEnabled(true);
+
+    		
     	}
     }
     private ServiceConnection mConnection = new ServiceConnection() {
