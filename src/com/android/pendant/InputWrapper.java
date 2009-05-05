@@ -80,7 +80,7 @@ public class InputWrapper extends Service implements SensorListener{
                 setGPS();
                 setXcel();
               }
-            }, 0, 40);
+            }, 0, 100);
 
     }
 

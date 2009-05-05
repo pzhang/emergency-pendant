@@ -80,7 +80,7 @@ public class EmergencyPendant extends Activity {
             public void run() {
                 mainRunner();
               }
-            }, 0, 40);
+            }, 0, 100);
     }
     private void mainRunner(){
     	Log.i("MainRunner", "Running");
@@ -128,7 +128,7 @@ public class EmergencyPendant extends Activity {
         	      "Location " + Float.toString(xy[0]) + 
         	      " " + Float.toString(xy[1]));
         	Log.i("MainRunner", "timed " + Float.toString(timed));
-    	velocity = velocity - ((float)(9.81) * (xcel[2]- (float)1.2) * (timed/(float)1000));
+    	velocity = velocity + ((float)(9.81) * (xcel[2]- (float)1.2) * (timed/(float)1000));
     	Log.i("MainRunner", "Velocity: " + Float.toString(velocity));
     }
     private void msgGate(){
