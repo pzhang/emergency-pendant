@@ -133,7 +133,7 @@ public class EmergencyPendant extends Activity {
     }
     private void msgGate(){
         Log.i("MainRunner", "Testing Threshold");
-    	if (tac || velocity > 1){
+    	if (tac || velocity < -1){
     		time.cancel();
     		Log.i("MainRunner", "Threshold Exceeded, Fall Detected, Sending User Notification");
     		try{
