@@ -66,8 +66,11 @@ public class InputWrapper extends Service implements SensorListener{
 		accel[0] = 0;
 		accel[1] = 0;
 		accel[2] = 0;
+
 		try {
-		input = new BufferedReader(new FileReader("/sdcard/data/data.txt"));
+		FileInputStream fIn = openFileInput("data.txt");
+        InputStreamReader isr = new InputStreamReader(fIn); 
+		input = new BufferedReader(isr);
 		}
 		catch (IOException ex){
 			
@@ -108,7 +111,14 @@ public class InputWrapper extends Service implements SensorListener{
 		else{
 			input.close();
 			input = null;
-			input = new BufferedReader(new FileReader("/sdcard/data/data.txt"));
+			try {
+				FileInputStream fIn = openFileInput("data.txt");
+		        InputStreamReader isr = new InputStreamReader(fIn); 
+				input = new BufferedReader(isr);
+				}
+				catch (IOException ex){
+					
+				}
 		}
 		}
 		catch (IOException ex){
