@@ -4,4 +4,5 @@ interface InputWrapperInterface {
 float[] location();
 boolean tacResponse();
 float[] xcel();
+long getTime();
 }

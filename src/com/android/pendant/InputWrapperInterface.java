@@ -72,6 +72,14 @@ reply.writeNoException();
 reply.writeFloatArray(_result);
 return true;
 }
+case TRANSACTION_getTime:
+{
+data.enforceInterface(DESCRIPTOR);
+long _result = this.getTime();
+reply.writeNoException();
+reply.writeLong(_result);
+return true;
+}
 }
 return super.onTransact(code, data, reply, flags);
 }
@@ -141,12 +149,31 @@ _data.recycle();
 }
 return _result;
 }
+public long getTime() throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+long _result;
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+mRemote.transact(Stub.TRANSACTION_getTime, _data, _reply, 0);
+_reply.readException();
+_result = _reply.readLong();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+return _result;
+}
 }
 static final int TRANSACTION_location = (IBinder.FIRST_CALL_TRANSACTION + 0);
 static final int TRANSACTION_tacResponse = (IBinder.FIRST_CALL_TRANSACTION + 1);
 static final int TRANSACTION_xcel = (IBinder.FIRST_CALL_TRANSACTION + 2);
+static final int TRANSACTION_getTime = (IBinder.FIRST_CALL_TRANSACTION + 3);
 }
 public float[] location() throws android.os.RemoteException;
 public boolean tacResponse() throws android.os.RemoteException;
 public float[] xcel() throws android.os.RemoteException;
+public long getTime() throws android.os.RemoteException;
 }

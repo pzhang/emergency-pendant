@@ -23,19 +23,24 @@ public class EmergencyPendant extends Activity {
 	float[] xcel;
 	boolean tac;
 	float[] xy;
+	float INERTIAL = 0;
+	int count = 0;
+	long systime = 0;
+	long prev_time = 0;
+	float velocity = 0;
 	TextView myView = null;
 	Context local = this;
 	Button send;
 	Button cancel;
-	String message;
+	String message = "Lat: Na, Long: Na";
     @Override
     
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pendant);
         myView = (TextView) findViewById(R.id.text);
-        send = (Button) findViewById(R.id.send);
-        cancel = (Button) findViewById(R.id.cancel);
+        //send = (Button) findViewById(R.id.send);
+        //cancel = (Button) findViewById(R.id.cancel);
        /* send.setVisibility(TextView.INVISIBLE);
         send.setEnabled(false);
         cancel.setVisibility(TextView.INVISIBLE);
@@ -44,7 +49,7 @@ public class EmergencyPendant extends Activity {
         Intent osvc = new Intent(this, OutputWrapper.class);
         bindService(svc, mConnection, Context.BIND_AUTO_CREATE);
         bindService(osvc, oConnection, Context.BIND_AUTO_CREATE);
-        send.setOnClickListener(new OnClickListener() {
+    /*    send.setOnClickListener(new OnClickListener() {
       	  @Override
       	  public void onClick(View v) {
       		  try{
@@ -60,18 +65,22 @@ public class EmergencyPendant extends Activity {
     	  public void onClick(View v) {
     		  runMain();
     	  }
-    	});
+    	});*/
         runMain();    
     
     }
 
     private void runMain(){
+    	velocity = 0;
+    	prev_time = 0;
+    	systime = 0;
+    	count = 0;
     	time = new Timer();
         time.schedule(new TimerTask() {
             public void run() {
                 mainRunner();
               }
-            }, 0, 1000);
+            }, 0, 40);
     }
     private void mainRunner(){
     	Log.i("MainRunner", "Running");
@@ -85,15 +94,17 @@ public class EmergencyPendant extends Activity {
     	xy = iService.location();
     	xcel = iService.xcel();
     	tac = iService.tacResponse();
+        prev_time = systime;
+        systime = iService.getTime();
+        
 
-    	Log.i("MainRunner",
-    	      "Location " + Float.toString(xy[0]) + 
-    	      " " + Float.toString(xy[1]));
-    	
         Log.i("MainRunner", "Tac: " + Boolean.toString(tac));
     	Log.i("MainRunner", "Acceleration: x: " + Float.toString(xcel[0])
 				+ " y: " + Float.toString(xcel[1])
 				+ " z: " + Float.toString(xcel[2]));
+    	count += 1;
+    	INERTIAL = (INERTIAL * (float)(count - 1) + xcel[2]) / ((float)count);
+        velCalc();
         msgGate();
     	}
     	catch(RemoteException ex){
@@ -104,20 +115,61 @@ public class EmergencyPendant extends Activity {
     		
     	
     }
+    private void velCalc(){
+    	float timed;
+    	if (systime == 0 || prev_time == 0){
+    		timed = 0;
+    	}
+    	else
+    	{
+    		timed = (float)(systime - prev_time);
+    	}
+    	Log.i("MainRunner",
+        	      "Location " + Float.toString(xy[0]) + 
+        	      " " + Float.toString(xy[1]));
+        	Log.i("MainRunner", "timed " + Float.toString(timed));
+    	velocity = velocity - ((float)(9.81) * (xcel[2]- (float)1.2) * (timed/(float)1000));
+    	Log.i("MainRunner", "Velocity: " + Float.toString(velocity));
+    }
     private void msgGate(){
-    
-    	if (tac || (xcel[0] >= 9.8 || 
-    			    xcel[1] >= 9.8 ||
-    			    xcel[2] >= 9.8)){
+        Log.i("MainRunner", "Testing Threshold");
+    	if (tac || velocity > 1){
     		time.cancel();
-    		myView.setText("Event has happened, decide operation: ");
-    		message = "Lat: " + Float.toString(xy[0]) +
-	          "Long: " + Float.toString(xy[1]);
-            send.setVisibility(TextView.VISIBLE);
+    		Log.i("MainRunner", "Threshold Exceeded, Fall Detected, Sending User Notification");
+    		try{
+    		oService.notification();
+    		}
+    		catch (RemoteException ex) {
+    			
+    		}
+    		Log.i("MainRunner", "User notified, waiting 10 seconds");
+            /*send.setVisibility(TextView.VISIBLE);
             send.setEnabled(true);
             cancel.setVisibility(TextView.VISIBLE);
-            cancel.setEnabled(true);
-
+            cancel.setEnabled(true);*/
+    		try {
+    		Thread.sleep(10000);
+    		}
+    		catch(InterruptedException ex){
+    			
+    		}
+            Log.i("MainRunner", "10 seconds have elapsed, sending msg");
+    		message = "PERSON user distress at : Lat: " + Float.toString(xy[0]) +
+            " Long: " + Float.toString(xy[1]);
+            try{
+            	oService.transmit(message);
+            }
+            catch (RemoteException ex){
+            	Log.i("MainRunner", "Cannot Reach Output");
+            }
+            Log.i("MainRunner", "Restarting in 10 seconds");
+            try {
+        		Thread.sleep(10000);
+        		}
+        		catch(InterruptedException ex){
+        			
+        		}
+            runMain();
     		
     	}
     }

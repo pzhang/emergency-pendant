@@ -36,15 +36,17 @@ public class OutputWrapper extends Service {
     		Log.i("OutputWrapper","In transmit");
     		sendMsg(msg);
     	}
+    	public void notification(){
+    		notifyUser();
+    	}
     };
     
 	private String[] config;
 	private void sendMsg(String msg){
 		Log.i("OutputWrapper", "Sending Msg : " + msg);
-		SmsManager sm = SmsManager.getDefault();
-	    notifyUser();
-		sm.sendTextMessage("5556", null, msg,
-		                   null, null);
+		//SmsManager sm = SmsManager.getDefault();
+		//sm.sendTextMessage("5556", null, msg,
+		 //                  null, null);
 
 	}
 	public OutputWrapper(){
@@ -53,9 +55,6 @@ public class OutputWrapper extends Service {
 	}
 	private void retrieveConfig(){
 		config = new String[0];
-	}
-	public void transmit(String content){
-		
 	}
 	public void notifyUser(){
 

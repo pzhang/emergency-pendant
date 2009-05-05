@@ -1,4 +1,5 @@
 package com.android.pendant;
+import java.io.*;
 import android.app.Service;
 import android.hardware.SensorManager;
 import android.content.Intent;
@@ -13,7 +14,9 @@ import android.hardware.SensorListener;
 public class InputWrapper extends Service implements SensorListener{
     private String[] config;
     LocationManager locMan;
+    BufferedReader input;
     String locPro;
+    long systime;
     SensorManager sensors;
     List<String> proList;
     private long lastUpdate = -1;
@@ -33,6 +36,9 @@ public class InputWrapper extends Service implements SensorListener{
     	}
     	public float[] xcel(){
     	    return XmHandler();	
+    	}
+    	public long getTime(){
+    		return systime;
     	}
     };
     public void onCreate(){
@@ -57,11 +63,21 @@ public class InputWrapper extends Service implements SensorListener{
 		
 		//Just grab the first member of the list. It's name will be "gps"
 		//locPro = proList.get(0);
+		accel[0] = 0;
+		accel[1] = 0;
+		accel[2] = 0;
+		try {
+		input = new BufferedReader(new FileReader("/sdcard/data/data.txt"));
+		}
+		catch (IOException ex){
+			
+		}
 		time.schedule(new TimerTask() {
             public void run() {
                 setGPS();
+                setXcel();
               }
-            }, 0, 1000);
+            }, 0, 40);
 
     }
 
@@ -78,8 +94,26 @@ public class InputWrapper extends Service implements SensorListener{
 		foo[0] = rand.nextFloat() * 12;
 		foo[1] = rand.nextFloat() * 12;
 		foo[2] = rand.nextFloat() * 12;
-		//return accel;
-		return foo;
+		return accel;
+		//return foo;
+	}
+	public void setXcel(){
+		String line = null;
+		try {
+		if ((line = input.readLine()) != null){
+			systime = Long.parseLong(line);
+			accel[Integer.parseInt(input.readLine())] = 
+				 (float) (Double.parseDouble(input.readLine()));
+		}
+		else{
+			input.close();
+			input = null;
+			input = new BufferedReader(new FileReader("/sdcard/data/data.txt"));
+		}
+		}
+		catch (IOException ex){
+			
+		}
 	}
 	public void onAccuracyChanged(int sensor, int accuracy) {
 	    // this method is called very rarely, so we don't have to
@@ -107,16 +141,16 @@ public class InputWrapper extends Service implements SensorListener{
 	//GPS Handler Stub
 	private void setGPS(){
 		Location loc;
-		Log.i("InputWrapper", "in setGPS");
-		Log.i("InputWrapper", Float.toString(s[0]) + " " + Float.toString(s[1]));
-		loc = locMan.getLastKnownLocation("gps");
-		float Lat =  (float)loc.getLatitude();
-		float Lon =  (float)loc.getLongitude();
-        s[0] = Lat;
-        s[1] = Lon;
+		//Log.i("InputWrapper", "in setGPS");
+		//Log.i("InputWrapper", Float.toString(s[0]) + " " + Float.toString(s[1]));
+		//loc = locMan.getLastKnownLocation("gps");
+		//float Lat =  (float)loc.getLatitude();
+		//float Lon =  (float)loc.getLongitude();
+        s[0] = (float)40.1763889;
+        s[1] = (float)-88.3563889;
 	}
 	public float[] GPSHandler(){
-		Log.i("InputWrapper", "in GPSHandler");
+		//Log.i("InputWrapper", "in GPSHandler");
 		return s;
 	}
 	//Config retrieval
