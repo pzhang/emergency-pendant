@@ -39,8 +39,8 @@ public class EmergencyPendant extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pendant);
         myView = (TextView) findViewById(R.id.text);
-        //send = (Button) findViewById(R.id.send);
-        //cancel = (Button) findViewById(R.id.cancel);
+        send = (Button) findViewById(R.id.send);
+        cancel = (Button) findViewById(R.id.cancel);
        /* send.setVisibility(TextView.INVISIBLE);
         send.setEnabled(false);
         cancel.setVisibility(TextView.INVISIBLE);
@@ -49,7 +49,7 @@ public class EmergencyPendant extends Activity {
         Intent osvc = new Intent(this, OutputWrapper.class);
         bindService(svc, mConnection, Context.BIND_AUTO_CREATE);
         bindService(osvc, oConnection, Context.BIND_AUTO_CREATE);
-    /*    send.setOnClickListener(new OnClickListener() {
+        send.setOnClickListener(new OnClickListener() {
       	  @Override
       	  public void onClick(View v) {
       		  try{
@@ -65,7 +65,7 @@ public class EmergencyPendant extends Activity {
     	  public void onClick(View v) {
     		  runMain();
     	  }
-    	});*/
+    	});
         runMain();    
     
     }
@@ -128,12 +128,12 @@ public class EmergencyPendant extends Activity {
         	      "Location " + Float.toString(xy[0]) + 
         	      " " + Float.toString(xy[1]));
         	Log.i("MainRunner", "timed " + Float.toString(timed));
-    	velocity = velocity + ((float)(9.81) * (xcel[2]- (float)1.2) * (timed/(float)1000));
+    	velocity = velocity + ((float)(9.81) * (xcel[2]- (float)INERTIAL) * (timed/(float)1000));
     	Log.i("MainRunner", "Velocity: " + Float.toString(velocity));
     }
     private void msgGate(){
         Log.i("MainRunner", "Testing Threshold");
-    	if (tac || velocity < -1){
+    	if (tac || velocity > 1){
     		time.cancel();
     		Log.i("MainRunner", "Threshold Exceeded, Fall Detected, Sending User Notification");
     		try{

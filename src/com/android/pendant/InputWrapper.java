@@ -15,6 +15,7 @@ public class InputWrapper extends Service implements SensorListener{
     private String[] config;
     LocationManager locMan;
     BufferedReader input;
+    BufferedReader input2;
     String locPro;
     long systime;
     SensorManager sensors;
@@ -75,6 +76,14 @@ public class InputWrapper extends Service implements SensorListener{
 		catch (IOException ex){
 			
 		}
+		try{
+		FileInputStream fIn2 = openFileInput("location.txt");
+        InputStreamReader isr2 = new InputStreamReader(fIn2); 
+		input2 = new BufferedReader(isr2);
+		}
+		catch (IOException ex){
+			
+		}
 		time.schedule(new TimerTask() {
             public void run() {
                 setGPS();
@@ -111,14 +120,14 @@ public class InputWrapper extends Service implements SensorListener{
 		else{
 			input.close();
 			input = null;
-			try {
+			//try {
 				FileInputStream fIn = openFileInput("data.txt");
 		        InputStreamReader isr = new InputStreamReader(fIn); 
 				input = new BufferedReader(isr);
-				}
-				catch (IOException ex){
+				//}
+			//	catch (IOException ex){
 					
-				}
+			//	}
 		}
 		}
 		catch (IOException ex){
@@ -151,13 +160,34 @@ public class InputWrapper extends Service implements SensorListener{
 	//GPS Handler Stub
 	private void setGPS(){
 		Location loc;
-		//Log.i("InputWrapper", "in setGPS");
-		//Log.i("InputWrapper", Float.toString(s[0]) + " " + Float.toString(s[1]));
-		//loc = locMan.getLastKnownLocation("gps");
-		//float Lat =  (float)loc.getLatitude();
-		//float Lon =  (float)loc.getLongitude();
-        s[0] = (float)40.1763889;
-        s[1] = (float)-88.3563889;
+		String line;
+		Log.i("InputWrapper", "in setGPS");
+		Log.i("InputWrapper", Float.toString(s[0]) + " " + Float.toString(s[1]));
+		loc = locMan.getLastKnownLocation("gps");
+		float Lat =  (float)loc.getLatitude();
+		float Lon =  (float)loc.getLongitude();
+	
+        try {
+    		if ((line = input2.readLine()) != null){
+    			s[0] = Float.parseFloat(line);
+    			s[1] = Float.parseFloat(input2.readLine());
+    		}
+    		else{
+    			input2.close();
+    			input2 = null;
+    			//try {
+    				FileInputStream fIn = openFileInput("location.txt");
+    		        InputStreamReader isr = new InputStreamReader(fIn); 
+    				input2 = new BufferedReader(isr);
+    				//}
+    			//	catch (IOException ex){
+    					
+    			//	}
+    		}
+    		}
+    		catch (IOException ex){
+    			
+    		}
 	}
 	public float[] GPSHandler(){
 		//Log.i("InputWrapper", "in GPSHandler");
